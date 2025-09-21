@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>GPS 轨迹可视化</title>
+  <script src="https://webapi.amap.com/maps?v=2.0&key=你的高德地图Key"></script>
+  <style>
+    html, body { margin:0; padding:0; height:100%; width:100%; }
+    #map { width:100%; height:100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    const deviceId = "你的OneNET设备ID";
+    const apiKey = "你的OneNET_API_Key";
+
+    async function getData() {
+      const url = `https://api.heclouds.com/devices/${deviceId}/datapoints?datastream_id=GPS`;
+      const res = await fetch(url, {
+        headers: { "api-key": apiKey }
+      });
+      const json = await res.json();
+      if (!json.data || !json.data.datastreams) return;
+      const dps = json.data.datastreams[0].datapoints;
+      const points = dps.map(p => {
+        let v = p.value;
+        if (typeof v === 'string') {
+          try { v = JSON.parse(v); } catch(e) {}
+        }
+        return { lat: v.lat, lon: v.lon, t: p.at };
+      });
+      drawMap(points);
+    }
+
+    function drawMap(points) {
+      if (!points.length) return;
+      const map = new AMap.Map('map', {
+        zoom: 15,
+        center: [points[0].lon, points[0].lat]
+      });
+      const path = points.map(p => [p.lon, p.lat]);
+      new AMap.Polyline({
+        path: path,
+        showDir: true,
+        strokeColor: 'blue',
+        strokeWeight: 3,
+        map: map
+      });
+      new AMap.Marker({
+        position: [points[points.length-1].lon, points[points.length-1].lat],
+        map: map,
+        title: '当前位置'
+      });
+    }
+
+    getData();
+  </script>
+</body>
+</html>
