@@ -1,41 +1,45 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>OneNET GPS 数据联通测试</title>
+    <meta charset="UTF-8">
+    <title>GPS 实时展示</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #map { width: 100%; height: 500px; margin-top: 10px; }
+    </style>
 </head>
 <body>
-  <h1>OneNET GPS 数据联通测试</h1>
-  <pre id="output">加载中...</pre>
+    <h2>设备 GPS 实时位置</h2>
+    <div>当前位置: <span id="gps">加载中...</span></div>
+    <div id="map"></div>
 
-  <script>
-    const output = document.getElementById('output');
+    <script type="module">
+        import { getGPS } from './api/getData.js';
+        import L from 'https://unpkg.com/leaflet/dist/leaflet-src.esm.js';
 
-    async function getData() {
-      try {
-        const res = await fetch('/api/getData');
-        const json = await res.json();
+        // 初始化地图
+        const map = L.map('map').setView([35.3136, 108.065], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-        if (json.dp && (json.dp.GPS.length || json.dp.Longitude.length || json.dp.Latitude.length)) {
-          let text = "历史数据：\n";
-          const len = Math.max(json.dp.GPS.length, json.dp.Longitude.length, json.dp.Latitude.length);
-          for (let i = 0; i < len; i++) {
-            const gps = json.dp.GPS[i]?.value ?? {};
-            const lon = json.dp.Longitude[i]?.value ?? 'N/A';
-            const lat = json.dp.Latitude[i]?.value ?? 'N/A';
-            text += `${i+1}. GPS: ${JSON.stringify(gps)}, 经度: ${lon}, 纬度: ${lat}\n`;
-          }
-          output.textContent = text;
-        } else {
-          output.textContent = json.message || "未获取到数据";
-          if (json.raw) output.textContent += "\n原始返回: " + json.raw;
+        const marker = L.marker([35.3136, 108.065]).addTo(map);
+
+        async function updateGPS() {
+            try {
+                const gps = await getGPS();
+                document.getElementById("gps").innerText = gps.lat + ',' + gps.lon;
+                marker.setLatLng([gps.lat, gps.lon]);
+                map.panTo([gps.lat, gps.lon]);
+            } catch(err) {
+                document.getElementById("gps").innerText = '获取失败';
+                console.error(err);
+            }
         }
-      } catch (err) {
-        output.textContent = "请求失败: " + err;
-      }
-    }
 
-    getData();
-  </script>
+        updateGPS();
+        setInterval(updateGPS, 5000);
+    </script>
 </body>
 </html>
