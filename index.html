@@ -2,26 +2,18 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>GPS OneNET 数据测试</title>
+  <title>OneNET 数据联通测试</title>
 </head>
 <body>
-  <h1>OneNET 数据调试页面</h1>
+  <h1>OneNET 数据联通测试</h1>
   <pre id="output">加载中...</pre>
 
   <script>
-    const deviceId = "2469496646";     // 替换为你的设备ID
-    const apiKey = "version=2018-10-31&res=products%2FdyLIMxujKq%2Fdevices%2Fnbiot&et=1758183737&method=md5&sign=bbDmpi9BkOWjLa6HWBlf1g%3D%3D";      // 替换为你的API Key
     const output = document.getElementById('output');
 
     async function getData() {
       try {
-        const url = `https://api.heclouds.com/devices/${deviceId}/datapoints?datastream_id=GPS`;
-        const res = await fetch(url, {
-          headers: {
-            "api-key": apiKey
-          }
-        });
-        if (!res.ok) throw new Error(`HTTP 错误 ${res.status}`);
+        const res = await fetch('/api/getData');
         const json = await res.json();
         output.textContent = JSON.stringify(json, null, 2);
       } catch (err) {
