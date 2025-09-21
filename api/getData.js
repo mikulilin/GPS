@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
-  const deviceId = "你的设备ID";      // 替换为你的 OneNET 设备ID
-  const apiKey = "你的APIKey";        // 替换为你的 OneNET API Key
+  const deviceId = "2469496646";      // 替换为你的 OneNET 设备ID
+  const apiKey = "version=2018-10-31&res=products%2FdyLIMxujKq%2Fdevices%2Fnbiot&et=1758183737&method=md5&sign=bbDmpi9BkOWjLa6HWBlf1g%3D%3D";        // 替换为你的 OneNET API Key
 
   const url = `https://api.heclouds.com/devices/${deviceId}/datapoint/history-datapoints?datastream_id=GPS`;
 
