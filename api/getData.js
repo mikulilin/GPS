@@ -10,35 +10,25 @@ export default async function handler(req, res) {
     const response = await fetch(url, { headers: { "api-key": apiKey } });
 
     const contentType = response.headers.get("content-type") || "";
+    let data;
 
-    if (!contentType.includes("application/json")) {
+    if (contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
+      // 返回 HTML 或文本
       const text = await response.text();
       console.error("OneNET 返回非 JSON 数据:", text);
-      res.status(200).json({
-        dp: { GPS: [] },
-        message: "OneNET 返回非 JSON 数据，请检查 API Key 或设备状态",
-        raw: text
-      });
-      return;
+      data = { dp: { GPS: [] }, message: "OneNET 返回非 JSON 数据，请检查 API Key 或设备状态", raw: text };
     }
 
-    const data = await response.json();
+    // 确保 dp.GPS 存在
+    if (!data.dp || !data.dp.GPS) data.dp = { GPS: [] };
+    if (!data.message) data.message = data.dp.GPS.length > 0 ? "" : "设备暂无 GPS 数据";
 
-    // 判断是否有 GPS 数据
-    if (data && data.dp && data.dp.GPS && data.dp.GPS.length > 0) {
-      res.status(200).json(data);
-    } else {
-      res.status(200).json({
-        dp: { GPS: [] },
-        message: "设备暂无 GPS 数据"
-      });
-    }
+    res.status(200).json(data);
 
   } catch (err) {
     console.error("请求 OneNET 出错:", err);
-    res.status(200).json({
-      dp: { GPS: [] },
-      message: "请求 OneNET 出错: " + err.message
-    });
+    res.status(200).json({ dp: { GPS: [] }, message: "请求 OneNET 出错: " + err.message });
   }
 }
