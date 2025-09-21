@@ -16,12 +16,10 @@
         const res = await fetch('/api/getData');
         const json = await res.json();
 
-        if (json.dp && json.dp.GPS && json.dp.GPS.length > 0) {
+        if(json.dp && json.dp.GPS.length > 0) {
           const points = json.dp.GPS.map(item => item.v);
           let text = "历史 GPS 数据：\n";
-          points.forEach((p, i) => {
-            text += `${i+1}. 纬度: ${p.lat}, 经度: ${p.lon}\n`;
-          });
+          points.forEach((p,i) => text += `${i+1}. 纬度: ${p.lat}, 经度: ${p.lon}\n`);
           output.textContent = text;
         } else {
           output.textContent = json.message || "未获取到 GPS 数据";
