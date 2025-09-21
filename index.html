@@ -16,8 +16,7 @@
         const res = await fetch('/api/getData');
         const json = await res.json();
 
-        if(json.dp && json.dp.GPS) {
-          // 遍历 GPS 历史数据
+        if(json.dp && json.dp.GPS && json.dp.GPS.length > 0) {
           const points = json.dp.GPS.map(item => item.v);
           let text = "历史 GPS 数据：\n";
           points.forEach((p, i) => {
@@ -25,7 +24,7 @@
           });
           output.textContent = text;
         } else {
-          output.textContent = "未获取到 GPS 数据";
+          output.textContent = json.message || "未获取到 GPS 数据";
         }
       } catch (err) {
         output.textContent = "请求失败: " + err;
