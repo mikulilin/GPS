@@ -16,14 +16,19 @@
         const res = await fetch('/api/getData');
         const json = await res.json();
 
-        if(json.dp && json.dp.GPS.length > 0) {
-          const points = json.dp.GPS.map(item => item.v);
-          let text = "历史 GPS 数据：\n";
-          points.forEach((p,i) => text += `${i+1}. 纬度: ${p.lat}, 经度: ${p.lon}\n`);
+        if (json.dp && (json.dp.GPS.length || json.dp.Longitude.length || json.dp.Latitude.length)) {
+          let text = "历史数据：\n";
+          const len = Math.max(json.dp.GPS.length, json.dp.Longitude.length, json.dp.Latitude.length);
+          for (let i = 0; i < len; i++) {
+            const gps = json.dp.GPS[i]?.value ?? {};
+            const lon = json.dp.Longitude[i]?.value ?? 'N/A';
+            const lat = json.dp.Latitude[i]?.value ?? 'N/A';
+            text += `${i+1}. GPS: ${JSON.stringify(gps)}, 经度: ${lon}, 纬度: ${lat}\n`;
+          }
           output.textContent = text;
         } else {
-          output.textContent = json.message || "未获取到 GPS 数据";
-          if(json.raw) output.textContent += "\n原始返回: " + json.raw;
+          output.textContent = json.message || "未获取到数据";
+          if (json.raw) output.textContent += "\n原始返回: " + json.raw;
         }
       } catch (err) {
         output.textContent = "请求失败: " + err;
