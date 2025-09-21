@@ -1,7 +1,11 @@
 {
-  "name": "GPS-OneNET-Test",
+  "name": "gps-onenet",
   "version": "1.0.0",
+  "description": "OneNet GPS 前端展示",
+  "main": "index.html",
+  "type": "module",
   "scripts": {
     "start": "vercel dev"
-  }
+  },
+  "dependencies": {}
 }
