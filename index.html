@@ -2,10 +2,10 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>OneNET 数据联通测试</title>
+  <title>OneNET GPS 数据联通测试</title>
 </head>
 <body>
-  <h1>OneNET 数据联通测试</h1>
+  <h1>OneNET GPS 数据联通测试</h1>
   <pre id="output">加载中...</pre>
 
   <script>
@@ -15,7 +15,18 @@
       try {
         const res = await fetch('/api/getData');
         const json = await res.json();
-        output.textContent = JSON.stringify(json, null, 2);
+
+        if(json.dp && json.dp.GPS) {
+          // 遍历 GPS 历史数据
+          const points = json.dp.GPS.map(item => item.v);
+          let text = "历史 GPS 数据：\n";
+          points.forEach((p, i) => {
+            text += `${i+1}. 纬度: ${p.lat}, 经度: ${p.lon}\n`;
+          });
+          output.textContent = text;
+        } else {
+          output.textContent = "未获取到 GPS 数据";
+        }
       } catch (err) {
         output.textContent = "请求失败: " + err;
       }
