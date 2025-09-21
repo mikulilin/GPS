@@ -1,7 +1,6 @@
 {
-  "name": "esp32-gps-map",
+  "name": "GPS-OneNET-Test",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "start": "vercel dev"
   }
