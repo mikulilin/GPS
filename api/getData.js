@@ -15,13 +15,13 @@ export default async function handler(req, res) {
     if (contentType.includes("application/json")) {
       data = await response.json();
     } else {
-      // 返回 HTML 或文本
+      // OneNET 返回 HTML 或错误文本
       const text = await response.text();
       console.error("OneNET 返回非 JSON 数据:", text);
       data = { dp: { GPS: [] }, message: "OneNET 返回非 JSON 数据，请检查 API Key 或设备状态", raw: text };
     }
 
-    // 确保 dp.GPS 存在
+    // 保证 dp.GPS 存在
     if (!data.dp || !data.dp.GPS) data.dp = { GPS: [] };
     if (!data.message) data.message = data.dp.GPS.length > 0 ? "" : "设备暂无 GPS 数据";
 
