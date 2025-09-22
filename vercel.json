@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/gps.py",
-      "use": "@vercel/python"
+      "src": "api/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/gps",
-      "dest": "api/gps.py"
+      "dest": "/api/gps.js"
     }
   ]
 }
