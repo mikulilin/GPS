@@ -5,7 +5,7 @@ import os
 # 环境变量方式存储，避免写死在代码中
 PRODUCT_ID = os.environ.get("PRODUCT_ID", "dyLIMxujKq")
 DEVICE_NAME = os.environ.get("DEVICE_NAME", "nbiot")
-AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "在这里填你的Authorization")
+AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "version=2018-10-31&res=products%2FdyLIMxujKq%2Fdevices%2Fnbiot&et=9958183737&method=md5&sign=repoGc9KTRy9kUS0Nfm32g%3D%3D")
 
 def handler(request):
     """
