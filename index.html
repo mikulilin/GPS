@@ -1,48 +1,27 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPS轨迹</title>
-<script src="https://webapi.amap.com/maps?v=2.0&key=你的高德Key"></script>
+    <meta charset="UTF-8">
+    <title>GPS 原始数据测试</title>
 </head>
 <body>
-<h2>GPS轨迹</h2>
-<div id="mapContainer" style="width:100%;height:500px;"></div>
+<h2>GPS 原始数据</h2>
+<pre id="output">加载中...</pre>
 
 <script>
 async function fetchGPS() {
-    const res = await fetch("/api/gps");
-    const data = await res.json();
-    return data;
+    try {
+        const res = await fetch("/api/gps");
+        const data = await res.json();
+        document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        console.log(data);
+    } catch (e) {
+        document.getElementById("output").innerText = "获取数据失败：" + e;
+        console.error(e);
+    }
 }
 
-function showMap(points) {
-    const map = new AMap.Map('mapContainer', {
-        zoom: 5,
-        center: [points[0].lon, points[0].lat]
-    });
-
-    const path = points.map(p => [p.lon, p.lat]);
-
-    new AMap.Polyline({
-        map: map,
-        path: path,
-        borderWeight: 2,
-        strokeColor: "#FF0000",
-        lineJoin: 'round'
-    });
-
-    points.forEach(p => {
-        new AMap.Marker({
-            map: map,
-            position: [p.lon, p.lat],
-            title: p.time
-        });
-    });
-}
-
-fetchGPS().then(showMap);
+fetchGPS();
 </script>
 </body>
 </html>
