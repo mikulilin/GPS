@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   try {
     const response = await fetch("https://iot-api.heclouds.com/datapoint/history-datapoints?product_id=dyLIMxujKq&device_name=nbiot&datastream_id=GPS&limit=10", {
       headers: {
-        Authorization: "version=2022-05-01&res=userid%2F464993&et=1758508478&method=sha1&sign=uVq%2FUSFNtfKq9yth7RNVLNICUD8%3D"
+        Authorization: "version=2018-10-31&res=products%2FdyLIMxujKq%2Fdevices%2Fnbiot&et=9958183737&method=md5&sign=repoGc9KTRy9kUS0Nfm32g%3D%3D"
       }
     });
 
