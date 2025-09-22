@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPS 数据查看</title>
+  <meta charset="UTF-8">
+  <title>GPS 数据展示</title>
 </head>
 <body>
-<h1>历史 GPS 数据</h1>
-<pre id="output">加载中...</pre>
+  <h1>历史 GPS 数据</h1>
+  <pre id="gps-data">加载中...</pre>
 
-<script>
-async function fetchGPS() {
-  try {
-    const resp = await fetch('/api/gps');
-    const data = await resp.json();
-    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-  } catch(e) {
-    document.getElementById('output').textContent = '获取数据失败: ' + e;
-  }
-}
+  <script>
+    async function fetchGPS() {
+      const pre = document.getElementById('gps-data');
+      try {
+        const res = await fetch('/api/gps');
+        const data = await res.json();
+        pre.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        pre.textContent = '获取数据失败: ' + e;
+      }
+    }
 
-fetchGPS();
-</script>
+    fetchGPS();
+  </script>
 </body>
 </html>
