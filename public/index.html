@@ -1,30 +1,36 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>GPS 数据展示</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    pre { background: #f0f0f0; padding: 10px; }
-  </style>
+<meta charset="UTF-8">
+<title>GPS 数据展示</title>
 </head>
 <body>
-  <h1>OneNET GPS 数据</h1>
-  <button id="loadBtn">加载GPS数据</button>
-  <pre id="output">点击按钮加载...</pre>
+<h1>历史 GPS 数据</h1>
+<pre id="output">加载中...</pre>
 
-  <script>
-    document.getElementById("loadBtn").addEventListener("click", async () => {
-      const output = document.getElementById("output");
-      output.textContent = "加载中...";
-      try {
+<script>
+async function fetchGPS() {
+    const output = document.getElementById("output");
+    output.textContent = "获取数据中...";
+    try {
         const res = await fetch("/api/gps");
         const data = await res.json();
-        output.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        output.textContent = "获取数据失败: " + err;
-      }
-    });
-  </script>
+        if (data.code === 0) {
+            const points = data.data.datastreams[0].datapoints;
+            let text = "";
+            points.forEach(p => {
+                text += `时间: ${p.at}, 经纬度: lat=${p.value.lat}, lon=${p.value.lon}\n`;
+            });
+            output.textContent = text;
+        } else {
+            output.textContent = "获取数据失败: " + JSON.stringify(data);
+        }
+    } catch (err) {
+        output.textContent = "请求异常: " + err;
+    }
+}
+
+fetchGPS();
+</script>
 </body>
 </html>
