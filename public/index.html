@@ -1,26 +1,36 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>GPS 数据展示</title>
+<meta charset="UTF-8">
+<title>GPS 数据展示</title>
 </head>
 <body>
-  <h1>历史 GPS 数据</h1>
-  <pre id="gps-data">加载中...</pre>
+<h1>历史 GPS 数据</h1>
+<pre id="output">加载中...</pre>
 
-  <script>
-    async function fetchGPS() {
-      const pre = document.getElementById('gps-data');
-      try {
-        const res = await fetch('/api/gps');
+<script>
+async function fetchGPS() {
+    const output = document.getElementById("output");
+    output.textContent = "获取数据中...";
+    try {
+        const res = await fetch("/api/gps");
         const data = await res.json();
-        pre.textContent = JSON.stringify(data, null, 2);
-      } catch (e) {
-        pre.textContent = '获取数据失败: ' + e;
-      }
+        if (data.code === 0) {
+            const points = data.data.datastreams[0].datapoints;
+            let text = "";
+            points.forEach(p => {
+                text += `时间: ${p.at}, 经纬度: lat=${p.value.lat}, lon=${p.value.lon}\n`;
+            });
+            output.textContent = text;
+        } else {
+            output.textContent = "获取数据失败: " + JSON.stringify(data);
+        }
+    } catch (err) {
+        output.textContent = "请求异常: " + err;
     }
+}
 
-    fetchGPS();
-  </script>
+fetchGPS();
+</script>
 </body>
 </html>
