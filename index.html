@@ -1,45 +1,41 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>GPS 实时展示</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <style>
-        body { font-family: Arial, sans-serif; }
-        #map { width: 100%; height: 500px; margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>GPS 定位</title>
+  <script src="sdk.js"></script>
 </head>
 <body>
-    <h2>设备 GPS 实时位置</h2>
-    <div>当前位置: <span id="gps">加载中...</span></div>
-    <div id="map"></div>
+  <h2 id="gps">当前位置: 加载中...</h2>
 
-    <script type="module">
-        import { getGPS } from './api/getData.js';
-        import L from 'https://unpkg.com/leaflet/dist/leaflet-src.esm.js';
+  <script>
+    // ⚠️ 填写你的 Master API Key 和 设备ID
+    var api = new OneNetApi("tIEbQvV3+u9IZvVwlIZZtZ10F8QmEeU12Koqjx30StqQBBVXMtkqdmgDY4+mCZBw");
+    var deviceId = 2469496646;
 
-        // 初始化地图
-        const map = L.map('map').setView([35.3136, 108.065], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+    // 定时刷新 GPS 数据
+    function loadGPS() {
+      api.getDataStreams(deviceId).done(function(res) {
+        console.log("返回：", res);
 
-        const marker = L.marker([35.3136, 108.065]).addTo(map);
-
-        async function updateGPS() {
-            try {
-                const gps = await getGPS();
-                document.getElementById("gps").innerText = gps.lat + ',' + gps.lon;
-                marker.setLatLng([gps.lat, gps.lon]);
-                map.panTo([gps.lat, gps.lon]);
-            } catch(err) {
-                document.getElementById("gps").innerText = '获取失败';
-                console.error(err);
-            }
+        if (res.data && res.data.length > 0) {
+          var gpsStream = res.data.find(s => s.id === "GPS");
+          if (gpsStream && gpsStream.current_value) {
+            var gps = gpsStream.current_value;
+            document.getElementById("gps").innerHTML =
+              "当前位置: 经度 " + gps.lon + " , 纬度 " + gps.lat;
+          } else {
+            document.getElementById("gps").innerHTML = "当前位置: 无GPS数据";
+          }
+        } else {
+          document.getElementById("gps").innerHTML = "当前位置: 无数据";
         }
+      });
+    }
 
-        updateGPS();
-        setInterval(updateGPS, 5000);
-    </script>
+    // 首次加载 + 每 10 秒刷新一次
+    loadGPS();
+    setInterval(loadGPS, 10000);
+  </script>
 </body>
 </html>
