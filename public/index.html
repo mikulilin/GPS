@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneNET GPS 数据</title>
+  <meta charset="UTF-8">
+  <title>GPS 数据展示</title>
 </head>
 <body>
-    <h2>GPS 数据（原始 JSON）</h2>
-    <pre id="gpsData">加载中...</pre>
+  <h1>最新 GPS 数据</h1>
+  <pre id="output">加载中...</pre>
 
-    <script>
-        async function fetchGPS() {
-            try {
-                const res = await fetch('/api/gps');
-                const data = await res.json();
-                document.getElementById('gpsData').textContent = JSON.stringify(data, null, 2);
-            } catch (err) {
-                document.getElementById('gpsData').textContent = '获取数据失败: ' + err;
-            }
-        }
-        fetchGPS();
-    </script>
+  <script>
+    async function fetchGPS() {
+      try {
+        const res = await fetch("/api/gps");
+        const data = await res.json();
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById("output").textContent = "获取失败: " + err;
+      }
+    }
+
+    fetchGPS();
+  </script>
 </body>
 </html>
