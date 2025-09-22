@@ -1,9 +1,0 @@
-{
-  "name": "gps-onenet",
-  "version": "1.0.0",
-  "description": "OneNET GPS 显示示例",
-  "main": "index.html",
-  "scripts": {},
-  "author": "YourName",
-  "license": "MIT"
-}
