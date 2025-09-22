@@ -5,7 +5,7 @@ import crypto from 'crypto';
 // 用户填写：产品信息
 const PRODUCT_ID = 'dyLIMxujKq';
 const DEVICE_NAME = 'nbiot';
-const API_KEY = '你的OneNET设备APIKey';
+const API_KEY = 'bzBsTjREcEh0azVBb0FCNkp3WG1tUGJFajlEWTRBcHA=';
 
 export default async function handler(req, res) {
   try {
