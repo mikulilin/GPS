@@ -1,43 +1,43 @@
-// Vercel Serverless Function
-import fetch from 'node-fetch';
-import crypto from 'crypto';
+// api/gps.js
+import https from 'https';
+import url from 'url';
 
-// 用户填写：产品信息
-const PRODUCT_ID = 'dyLIMxujKq';
-const DEVICE_NAME = 'nbiot';
-const API_KEY = 'bzBsTjREcEh0azVBb0FCNkp3WG1tUGJFajlEWTRBcHA=';
+export default function handler(req, res) {
+  // OneNET 设备信息
+  const PRODUCT_ID = 'dyLIMxujKq';
+  const DEVICE_NAME = 'nbiot';
+  const API_KEY = 'bzBsTjREcEh0azVBb0FCNkp3WG1tUGJFajlEWTRBcHA=';
 
-export default async function handler(req, res) {
-  try {
-    // 当前时间戳
-    const now = Math.floor(Date.now() / 1000);
-    const et = now + 300; // token 有效期 5 分钟
+  // 构建查询参数
+  const queryParams = new url.URLSearchParams({
+    product_id: PRODUCT_ID,
+    device_name: DEVICE_NAME,
+    datastream_id: 'GPS',
+    limit: '10'
+  }).toString();
 
-    const resStr = `products/${PRODUCT_ID}/devices/${DEVICE_NAME}`;
-    const method = 'md5';
-    const signStr = resStr + et + method + API_KEY;
+  const options = {
+    hostname: 'iot-api.heclouds.com',
+    path: '/datapoint/history-datapoints?' + queryParams,
+    method: 'GET',
+    headers: {
+      'Authorization': API_KEY,
+      'Accept': 'application/json'
+    }
+  };
 
-    const sign = crypto.createHash('md5').update(signStr).digest('base64');
-
-    const authorization = `version=2018-10-31&res=${encodeURIComponent(resStr)}&et=${et}&method=${method}&sign=${encodeURIComponent(sign)}`;
-
-    const url = `https://api.heclouds.com/devices/${DEVICE_NAME}/datapoints`;
-
-    const params = new URLSearchParams({
-      datastream_id: 'GPS',
-      limit: '10'
-    });
-
-    const response = await fetch(`${url}?${params.toString()}`, {
-      headers: {
-        'Authorization': authorization,
-        'Accept': 'application/json'
+  https.get(options, (oneRes) => {
+    let data = '';
+    oneRes.on('data', (chunk) => { data += chunk; });
+    oneRes.on('end', () => {
+      try {
+        const jsonData = JSON.parse(data);
+        res.status(200).json(jsonData);
+      } catch (err) {
+        res.status(500).json({ error: '返回不是合法JSON', raw: data });
       }
     });
-
-    const data = await response.json();
-    res.status(200).json(data);
-  } catch (err) {
+  }).on('error', (err) => {
     res.status(500).json({ error: err.message });
-  }
+  });
 }
