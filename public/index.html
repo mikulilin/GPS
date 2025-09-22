@@ -2,37 +2,28 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneNET GPS 显示</title>
+    <title>GPS 数据显示</title>
 </head>
 <body>
     <h1>最新 GPS 数据</h1>
-    <div id="gpsData">加载中...</div>
+    <pre id="gpsData">加载中...</pre>
 
     <script>
         async function fetchGPS() {
             try {
                 const res = await fetch('/api/gps');
                 const data = await res.json();
-                const container = document.getElementById('gpsData');
-                
-                if (data.code === 0 && data.gps.length > 0) {
-                    container.innerHTML = '';
-                    data.gps.forEach(point => {
-                        const div = document.createElement('div');
-                        div.textContent = `时间: ${point.time}, 经度: ${point.lon}, 纬度: ${point.lat}`;
-                        container.appendChild(div);
-                    });
+                if(data.code === 0){
+                    document.getElementById('gpsData').textContent = JSON.stringify(data.gps, null, 2);
                 } else {
-                    container.textContent = '未获取到 GPS 数据';
+                    document.getElementById('gpsData').textContent = "获取失败：" + data.error;
                 }
-            } catch (err) {
-                document.getElementById('gpsData').textContent = '获取数据失败: ' + err;
+            } catch(e) {
+                document.getElementById('gpsData').textContent = "请求失败: " + e;
             }
         }
 
         fetchGPS();
-        setInterval(fetchGPS, 60000); // 每分钟刷新一次
     </script>
 </body>
 </html>
