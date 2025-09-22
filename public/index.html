@@ -1,22 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-  <meta charset="utf-8">
-  <title>ESP32 → NB-IoT → Vercel → HTML</title>
+  <meta charset="UTF-8">
+  <title>GPS 数据展示</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    pre { background: #f0f0f0; padding: 10px; }
+  </style>
 </head>
 <body>
-  <h2>实时数据</h2>
-  <div id="log"></div>
+  <h1>OneNET GPS 数据</h1>
+  <button id="loadBtn">加载GPS数据</button>
+  <pre id="output">点击按钮加载...</pre>
 
   <script>
-    async function fetchData() {
-      const res = await fetch("/api/data");
-      const data = await res.json();
-      document.getElementById("log").innerHTML =
-        "最新数据: " + JSON.stringify(data);
-    }
-
-    setInterval(fetchData, 3000); // 每 3 秒刷新
+    document.getElementById("loadBtn").addEventListener("click", async () => {
+      const output = document.getElementById("output");
+      output.textContent = "加载中...";
+      try {
+        const res = await fetch("/api/gps");
+        const data = await res.json();
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        output.textContent = "获取数据失败: " + err;
+      }
+    });
   </script>
 </body>
 </html>
