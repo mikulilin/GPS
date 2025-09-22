@@ -2,7 +2,7 @@
   "name": "gps-vercel",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {
-    "node-fetch": "^3.4.0"
+  "scripts": {
+    "start": "vercel dev"
   }
 }
